@@ -5,19 +5,21 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include <string.h>
 #include <math.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+#include "freertos/message_buffer.h"
 #include "esp_timer.h"
 #include "esp_log.h"
-#include <driver/i2c.h>
+#include "driver/i2c.h"
+#include "cJSON.h"
 
 #include "parameter.h"
 
 extern QueueHandle_t xQueueTrans;
+extern MessageBufferHandle_t xMessageBufferToClient;
 
 static const char *TAG = "MPU";
 
@@ -32,6 +34,7 @@ static const char *TAG = "MPU";
 
 #define RESTRICT_PITCH // Comment out to restrict roll to ±90deg instead
 #define RAD_TO_DEG (180.0/M_PI)
+#define DEG_TO_RAD 0.0174533
 
 // Arduino macro
 #define micros() (unsigned long) (esp_timer_get_time())
@@ -317,7 +320,7 @@ void bmi160(void *pvParameters)
 			printf("\n");
 #endif
 
-			/* Send packet */
+			// Send UDP packet
 			float _roll = roll-initial_roll;
 			float _pitch = pitch-initial_pitch;
 			ESP_LOGI(TAG, "roll:%f pitch=%f", _roll, _pitch);
@@ -329,6 +332,23 @@ void bmi160(void *pvParameters)
 			if (xQueueSend(xQueueTrans, &pose, 100) != pdPASS ) {
 				ESP_LOGE(pcTaskGetName(NULL), "xQueueSend fail");
 			}
+
+			// Send WEB request
+			cJSON *request;
+			request = cJSON_CreateObject();
+			cJSON_AddStringToObject(request, "id", "data-request");
+			cJSON_AddNumberToObject(request, "roll", _roll);
+			cJSON_AddNumberToObject(request, "pitch", _pitch);
+			cJSON_AddNumberToObject(request, "yaw", 0.0);
+			char *my_json_string = cJSON_Print(request);
+			ESP_LOGD(TAG, "my_json_string\n%s",my_json_string);
+			size_t xBytesSent = xMessageBufferSend(xMessageBufferToClient, my_json_string, strlen(my_json_string), 100);
+			if (xBytesSent != strlen(my_json_string)) {
+				ESP_LOGE(TAG, "xMessageBufferSend fail");
+			}
+			cJSON_Delete(request);
+			cJSON_free(my_json_string);
+
 			vTaskDelay(1);
 			elasped = 0;
 		}

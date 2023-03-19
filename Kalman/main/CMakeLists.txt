@@ -1,5 +1,7 @@
-set(COMPONENT_SRCS "main.cpp bmi160.cpp udp_trans.c wifi.c" )
-set(COMPONENT_ADD_INCLUDEDIRS ".")
-
-register_component()
-
+idf_component_register(SRCS "main.cpp" "bmi160.cpp" "wifi.c" "udp_trans.c" "web_server.c" "web_client.c"
+    INCLUDE_DIRS "."
+    EMBED_FILES "../html/error.html"
+                "../html/favicon.ico"
+                "../html/main.js"
+                "../html/root.html"
+                "../html/main.css")

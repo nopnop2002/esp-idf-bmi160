@@ -2,7 +2,9 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.5)
 
-set(EXTRA_COMPONENT_DIRS ../components/bmi160 ../components/KalmanFilter)
+set(EXTRA_COMPONENT_DIRS ../components/bmi160 
+                         ../components/KalmanFilter
+                         ../components/websocket)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(bmi180)
