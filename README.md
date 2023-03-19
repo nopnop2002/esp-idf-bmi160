@@ -108,6 +108,5 @@ $ cd PyTeapot-Quaternion-Euler-cube-rotation
 $ python3 pyteapot.py
 ```
 The posture of your sensor is displayed.   
-![pyteapot_2023-03-11_09-11-46](https://user-images.githubusercontent.com/6020549/224452173-2350704d-1fc4-4a12-8324-434c11f62c52.png)
-
+![bmi180_2023-03-17_06-08-57](https://user-images.githubusercontent.com/6020549/226072858-b5e52dc5-db87-4613-8c05-4008a4bb8170.png)
 
