@@ -78,14 +78,13 @@ or
 http://esp32.local/
 ```
 
-![browser-roll-pitch-yaw](https://user-images.githubusercontent.com/6020549/226144309-9e9f2d0f-83de-4d9d-b2ca-6d5363c3089a.JPG)
+![browser-roll-pitch](https://user-images.githubusercontent.com/6020549/226154931-a63b230a-e970-4d29-be67-945ca037f99b.JPG)
 
 WEB pages are stored in the html folder.   
 I used [this](https://canvas-gauges.com/) for gauge display.   
 I used [this](https://threejs.org/) for 3D display.   
 You can change it as you like.   
 
-![browser-roll-pitch](https://user-images.githubusercontent.com/6020549/226154931-a63b230a-e970-4d29-be67-945ca037f99b.JPG)
 
 # View Euler angles using PyTeapot   
 You can view Euler angles using [this](https://github.com/thecountoftuscany/PyTeapot-Quaternion-Euler-cube-rotation) tool.   
