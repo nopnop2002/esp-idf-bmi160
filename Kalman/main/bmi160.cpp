@@ -21,7 +21,7 @@
 extern QueueHandle_t xQueueTrans;
 extern MessageBufferHandle_t xMessageBufferToClient;
 
-static const char *TAG = "MPU";
+static const char *TAG = "IMU";
 
 // bmi160 stuff
 #include "bmi160.h"
