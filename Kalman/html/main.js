@@ -49,17 +49,17 @@ websocket.onmessage = function(evt) {
 			console.log("METER values[2]=" + values[2]);
 			console.log("METER values[3]=" + values[3]);
 			if (values[1] != "") {
-				gauge1.options.units = values[1];
+				gauge1.options.title = values[1];
 				document.getElementById("canvas1").style.display = "inline-block";
 				meter1 = 1;
 			}
 			if (values[2] != "") {
-				gauge2.options.units = values[2];
+				gauge2.options.title = values[2];
 				document.getElementById("canvas2").style.display = "inline-block";
 				meter2 = 1;
 			}
 			if (values[3] != "") {
-				gauge3.options.units = values[3];
+				gauge3.options.title = values[3];
 				document.getElementById("canvas3").style.display = "inline-block";
 				meter3 = 1;
 			}

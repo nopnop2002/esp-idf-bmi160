@@ -76,7 +76,7 @@ or
 http://esp32.local/
 ```
 
-![browser-roll-pitch](https://user-images.githubusercontent.com/6020549/232374701-49966628-38d3-4197-8b9b-407e65a54488.JPG)
+![bmi160-euler](https://user-images.githubusercontent.com/6020549/232381988-f4003a78-2145-493c-829e-9d0952117ea6.JPG)
 
 WEB pages are stored in the html folder.   
 I used [this](https://canvas-gauges.com/) for gauge display.   
