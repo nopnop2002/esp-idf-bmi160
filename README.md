@@ -1,6 +1,5 @@
 # esp-idf-bmi160
-A demo showing the pose of the bmi160 in 3D using esp-idf.
-
+A demo showing the pose of the bmi160 6DoF IMU sensor in 3D using esp-idf.
 
 You can use the Kalman filter or the Madgwick filter to estimate the Euler angle.   
 Euler angles are roll, pitch and yaw.   
