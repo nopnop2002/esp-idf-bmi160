@@ -11,7 +11,7 @@ I used [this](https://github.com/boschsensortec/BMI160_driver) library.
 
 # Software requiment
 ESP-IDF V4.4/V5.0.   
-ESP-IDF V5 is required when using ESP32-C2.   
+ESP-IDF V5.0 is required when using ESP32-C2.   
 
 # Hardware requirements
 BMI160 Accelerometer Gyroscope module 6 Dof inertial Measurement Sensors.   
