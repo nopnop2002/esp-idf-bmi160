@@ -12,7 +12,7 @@
 #include "websocket_server.h"
 
 static const char *TAG = "MAIN";
-static const char *MDNS_HOSTNAME = "ESP32";
+static const char *MDNS_HOSTNAME = "esp32";
 
 MessageBufferHandle_t xMessageBufferToClient;
 QueueHandle_t xQueueTrans;
@@ -45,6 +45,9 @@ void start_mdns(void)
 	ESP_ERROR_CHECK( mdns_hostname_set(MDNS_HOSTNAME) );
 	ESP_LOGI(TAG, "mdns hostname set to: [%s]", MDNS_HOSTNAME);
 
+	//initialize service
+	ESP_ERROR_CHECK( mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0) );
+
 #if 0
 	//set default mDNS instance name
 	ESP_ERROR_CHECK( mdns_instance_name_set("ESP32 with mDNS") );
@@ -59,6 +62,7 @@ void start_i2c(void) {
 	conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
 	conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
 	conf.master.clk_speed = 400000;
+	conf.clk_flags = 0;
 	ESP_ERROR_CHECK(i2c_param_config(I2C_NUM_0, &conf));
 	ESP_ERROR_CHECK(i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0));
 }
