@@ -43,25 +43,10 @@ Madgwick madgwick;
 
 /* IMU Data */
 struct bmi160_dev sensor;
-#if 0
-int16_t raw_ax, raw_ay, raw_az;
-int16_t raw_gx, raw_gy, raw_gz;
-double accX, accY, accZ;
-double gyroX, gyroY, gyroZ;
-#endif
 
 // Accel & Gyro scale factor
 float accel_sensitivity;
 float gyro_sensitivity;
-
-#if 0
-double roll, pitch; // Roll and pitch are calculated using the accelerometer
-
-double gyroXangle, gyroYangle; // Angle calculate using the gyro only
-double compAngleX, compAngleY; // Calculated angle using a complementary filter
-double kalAngleX, kalAngleY; // Calculated angle using a Kalman filter
-#endif
-
 
 /** Select an 8-bit device register.
  * @param devAddr I2C slave device address
@@ -165,7 +150,6 @@ double TimeToSec() {
 
 void bmi160(void *pvParameters)
 {
-	//struct bmi160_dev sensor;
 	//I2C address is 0x68 (if SDO-pin is gnd) or 0x69 (if SDO-pin is vddio).
 	//sensor.id = BMI160_I2C_ADDR;
 	sensor.id = CONFIG_I2C_ADDR;
@@ -234,13 +218,15 @@ void bmi160(void *pvParameters)
 		ESP_LOGD(TAG, "dt=%f",dt);
 		last_time_ = TimeToSec();
 
-		// Get Euler
+		// Convert relative to absolute
 		float ax = (float)accel.x / accel_sensitivity;
 		float ay = (float)accel.y / accel_sensitivity;
 		float az = (float)accel.z / accel_sensitivity; 
 		float gx = (float)gyro.x / gyro_sensitivity;
 		float gy = (float)gyro.y / gyro_sensitivity;
 		float gz = (float)gyro.z / gyro_sensitivity;
+
+		// Get Euler
 		madgwick.updateIMU(gx, gy, gz, ax, ay, az, dt);
 		float roll = madgwick.getRoll();
 		float pitch = madgwick.getPitch();
@@ -263,17 +249,11 @@ void bmi160(void *pvParameters)
 			printf("roll:%f", roll); printf(" ");
 			printf("initial_roll:%f", initial_roll); printf(" ");
 			printf("roll-initial_roll:%f", roll-initial_roll); printf(" ");
-			printf("gyroXangle:%f", gyroXangle); printf(" ");
-			printf("compAngleX:%f", compAngleX); printf(" ");
-			printf("kalAngleX:%f", kalAngleX); printf(" ");
 			printf("\n");
 
 			printf("pitch: %f", pitch); printf(" ");
 			printf("initial_pitch: %f", initial_pitch); printf(" ");
 			printf("pitch-initial_pitch: %f", pitch-initial_pitch); printf(" ");
-			printf("gyroYangle:%f", gyroYangle); printf(" ");
-			printf("compAngleY:%f", compAngleY); printf(" ");
-			printf("kalAngleY:%f", kalAngleY); printf("\t");
 			printf("\n");
 #endif
 
