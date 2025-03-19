@@ -97,7 +97,7 @@ This is a great application.
 +-------------+     +-------------+     +-------------+
 ```
 
-### Installation
+### Installation for Linux
 ```
 $ sudo apt install python3-pip python3-setuptools
 $ python3 -m pip install -U pip
@@ -110,3 +110,18 @@ $ python3 pyteapot.py
 The posture of your sensor is displayed.   
 ![bmi180_2023-03-17_06-08-57](https://user-images.githubusercontent.com/6020549/226072858-b5e52dc5-db87-4613-8c05-4008a4bb8170.png)
 
+### Installation for Windows   
+Install Git for Windows from [here](https://gitforwindows.org/).   
+Install Python Releases for Windows from [here](https://www.python.org/downloads/windows/).   
+Open Git Bash and run:   
+```
+$ python --version
+Python 3.11.9
+$ python -m pip install -U pip
+$ python -m pip install pygame
+$ python -m pip install PyOpenGL PyOpenGL_accelerate
+$ git clone https://github.com/thecountoftuscany/PyTeapot-Quaternion-Euler-cube-rotation
+$ cd PyTeapot-Quaternion-Euler-cube-rotation
+$ python pyteapot.py
+```
+![Image](https://github.com/user-attachments/assets/3aa9fd0d-2a0a-4a7c-ac40-4b84a70acaaf)
