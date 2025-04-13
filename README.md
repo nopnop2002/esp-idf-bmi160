@@ -5,14 +5,15 @@ You can use the Kalman filter or the Madgwick filter to estimate the Euler angle
 Euler angles are roll, pitch and yaw.   
 It's very intuitive and easy to understand.   
 However, since BMI160 is a 6DoF IMU, YAW estimation is not possible.   
-![a-Pitch-yaw-and-roll-angles-of-an-aircraft-with-body-orientation-O-u-v-original](https://user-images.githubusercontent.com/6020549/226072914-a7f923fc-eb6e-4d19-b2ff-8c9f2749ee6f.jpg)
-
-I used [this](https://github.com/boschsensortec/BMI160_driver) library.   
+![a-Pitch-yaw-and-roll-angles-of-an-aircraft-with-body-orientation-O-u-v-original](https://user-images.githubusercontent.com/6020549/226072914-a7f923fc-eb6e-4d19-b2ff-8c9f2749ee6f.jpg)   
+You can view like this.   
+![Image](https://github.com/user-attachments/assets/6d81eec0-5b80-4e5f-ae97-689742253f9a)   
 
 # Software requiment
 ESP-IDF V4.4/V5.x.   
 ESP-IDF V5.0 is required when using ESP32-C2.   
 ESP-IDF V5.1 is required when using ESP32-C6.   
+I used [this](https://github.com/boschsensortec/BMI160_driver) library.   
 
 # Hardware requirements
 BMI160 Accelerometer Gyroscope module 6 Dof inertial Measurement Sensors.   
@@ -90,11 +91,11 @@ It works as a UDP display server.
 This is a great application.   
 
 ```
-+-------------+     +-------------+     +-------------+
-|     IMU     | i2c |    ESP32    | UDP | pyteapot.py |
-|             |---->|             |---->|             |
-|             |     |             |     |             |
-+-------------+     +-------------+     +-------------+
++-------------+          +-------------+          +-------------+
+|             |          |             |          |             |
+|     IMU     |--(i2c)-->|    ESP32    |--(UDP)-->| pyteapot.py |
+|             |          |             |          |             |
++-------------+          +-------------+          +-------------+
 ```
 
 ### Installation for Linux
@@ -125,3 +126,58 @@ $ cd PyTeapot-Quaternion-Euler-cube-rotation
 $ python pyteapot.py
 ```
 ![Image](https://github.com/user-attachments/assets/3aa9fd0d-2a0a-4a7c-ac40-4b84a70acaaf)
+
+
+# View Euler angles using panda3d library   
+You can view Euler angles using [this](https://www.panda3d.org/) library.   
+It works as a UDP display server.   
+
+```
++-------------+          +-------------+          +-------------+
+|             |          |             |          |             |
+|     IMU     |--(ic2)-->|    ESP32    |--(UDP)-->|  panda.py   |
+|             |          |             |          |             |
++-------------+          +-------------+          +-------------+
+```
+
+### Installation for Linux
+```
+$ python3 --version
+Python 3.11.2
+$ sudo apt install python3-pip python3-setuptools
+$ python3 -m pip install -U pip
+$ python3 -m pip install panda3d
+$ git clone https://github.com/nopnop2002/esp-idf-mpu6050-dmp
+$ cd esp-idf-mpu6050-dmp/panda3d
+$ python3 panda.py --help
+usage: panda.py [-h] [--model {jet,biplain,707,fa18}]
+
+options:
+  -h, --help            show this help message and exit
+  --model {jet,biplain,707,fa18}
+```
+![Image](https://github.com/user-attachments/assets/6d81eec0-5b80-4e5f-ae97-689742253f9a)   
+
+### Installation for Windows
+Install Git for Windows from [here](https://gitforwindows.org/).   
+Install Python Releases for Windows from [here](https://www.python.org/downloads/windows/).   
+Open Git Bash and run:   
+```
+$ python --version
+Python 3.11.9
+$ python -m pip install -U pip
+$ python -m pip install panda3d
+$ git clone https://github.com/nopnop2002/esp-idf-mpu6050-dmp
+$ cd esp-idf-mpu6050-dmp/panda3d
+$ python panda.py --help
+usage: panda.py [-h] [--model {jet,biplain,707,fa18}]
+
+options:
+  -h, --help            show this help message and exit
+  --model {jet,biplain,707,fa18}
+```
+![Image](https://github.com/user-attachments/assets/0ec982c4-3353-4cb8-9c39-ecd785ca9729)
+
+### How to use   
+See [here](https://github.com/nopnop2002/esp-idf-mpu6050-dmp/blob/main/panda3d/README.md)   
+
