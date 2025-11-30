@@ -119,7 +119,7 @@ void app_main(void)
 	xTaskCreate(&bmi160, "IMU", 1024*8, NULL, 5, NULL);
 
 	// Start udp task
-	xTaskCreate(&udp_trans, "TRANS", 1024*2, NULL, 5, NULL);
+	xTaskCreate(&udp_trans, "TRANS", 1024*3, NULL, 5, NULL);
 
 	vTaskDelay(100);
 }
