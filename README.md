@@ -9,7 +9,7 @@ However, since BMI160 is a 6DoF IMU, YAW estimation is not possible.
 You can view like this.   
 ![Image](https://github.com/user-attachments/assets/6d81eec0-5b80-4e5f-ae97-689742253f9a)   
 
-# Software requiment
+# Software requirements
 ESP-IDF V5.0 or later.   
 ESP-IDF V4.4 release branch reached EOL in July 2024.   
 ESP-IDF V5.1 is required when using ESP32-C6.   
