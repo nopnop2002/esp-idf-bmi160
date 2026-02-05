@@ -13,7 +13,6 @@
 #include "freertos/message_buffer.h"
 #include "esp_timer.h"
 #include "esp_log.h"
-#include "driver/i2c.h"
 #include "cJSON.h"
 
 #include "parameter.h"
@@ -26,8 +25,7 @@ static const char *TAG = "IMU";
 // bmi160 stuff
 #include "bmi160.h"
 #include "bmi160_defs.h"
-#define I2C_NUM I2C_NUM_0
-//#define __DEBUG__ 1
+#include "bmi160_driver.h"
 
 // Source: https://github.com/TKJElectronics/KalmanFilter
 #include "Kalman.h"
@@ -49,98 +47,6 @@ struct bmi160_dev sensor;
 // Accel & Gyro scale factor
 float accel_sensitivity;
 float gyro_sensitivity;
-
-/** Select an 8-bit device register.
- * @param devAddr I2C slave device address
- * @param regAddr First register regAddr to read from
- */
-void SelectRegister(uint8_t devAddr, uint8_t regAddr){
-	ESP_LOGD(__FUNCTION__, "devAddr=0x%x regAddr=0x%x", devAddr, regAddr);
-	i2c_cmd_handle_t cmd;
-
-	cmd = i2c_cmd_link_create();
-	ESP_ERROR_CHECK(i2c_master_start(cmd));
-	ESP_ERROR_CHECK(i2c_master_write_byte(cmd, (devAddr << 1) | I2C_MASTER_WRITE, 1));
-	ESP_ERROR_CHECK(i2c_master_write_byte(cmd, regAddr, 1));
-	ESP_ERROR_CHECK(i2c_master_stop(cmd));
-	ESP_ERROR_CHECK(i2c_master_cmd_begin(I2C_NUM, cmd, 1000/portTICK_PERIOD_MS));
-	i2c_cmd_link_delete(cmd);
-}
-
-
-/** Read multiple bytes from an 8-bit device register.
- * @param devAddr I2C slave device address
- * @param regAddr First register regAddr to read from
- * @param length Number of bytes to read
- * @param data Buffer to store read data in
- * @param timeout Optional read timeout in milliseconds (0 to disable, leave off to use default class value in I2Cdev::readTimeout)
- * @return I2C_TransferReturn_TypeDef http://downloads.energymicro.com/documentation/doxygen/group__I2C.html
- */
-int8_t user_i2c_read(uint8_t devAddr, uint8_t regAddr, uint8_t* data, uint16_t length) {
-	i2c_cmd_handle_t cmd;
-	SelectRegister(devAddr, regAddr);
-
-	cmd = i2c_cmd_link_create();
-	ESP_ERROR_CHECK(i2c_master_start(cmd));
-	ESP_ERROR_CHECK(i2c_master_write_byte(cmd, (devAddr << 1) | I2C_MASTER_READ, 1));
-
-	if(length>1)
-		ESP_ERROR_CHECK(i2c_master_read(cmd, data, length-1, I2C_MASTER_ACK));
-
-	ESP_ERROR_CHECK(i2c_master_read_byte(cmd, data+length-1, I2C_MASTER_NACK));
-
-	ESP_ERROR_CHECK(i2c_master_stop(cmd));
-	ESP_ERROR_CHECK(i2c_master_cmd_begin(I2C_NUM, cmd, 1000/portTICK_PERIOD_MS));
-	i2c_cmd_link_delete(cmd);
-
-#if __DEBUG__
-	ESP_LOGI(__FUNCTION__, "regAddr=0x%x length=%d", regAddr, length);
-	for (int i=0;i<length;i++) {
-		ESP_LOGI(__FUNCTION__, "data[%d]=0x%x", i, data[i]);
-	}
-#endif
-
-	return 0;
-}
-
-
-/** Write single byte to an 8-bit device register.
- * @param devAddr I2C slave device address
- * @param regAddr Register address to write to
- * @param length Number of bytes to write
- * @param data Array of bytes to write
- * @return Status of operation (true = success)
- */
-int8_t user_i2c_write(uint8_t devAddr, uint8_t regAddr, uint8_t* data, uint16_t length) {
-#if __DEBUG__
-	ESP_LOGI(__FUNCTION__, "regAddr=0x%x length=%d", regAddr, length);
-	for (int i=0;i<length;i++) {
-		ESP_LOGI(__FUNCTION__, "data[%d]=0x%x", i, data[i]);
-	}
-#endif
-
-	i2c_cmd_handle_t cmd;
-
-	cmd = i2c_cmd_link_create();
-	ESP_ERROR_CHECK(i2c_master_start(cmd));
-	ESP_ERROR_CHECK(i2c_master_write_byte(cmd, (devAddr << 1) | I2C_MASTER_WRITE, 1));
-	ESP_ERROR_CHECK(i2c_master_write_byte(cmd, regAddr, 1));
-	if(length>1)
-		ESP_ERROR_CHECK(i2c_master_write(cmd, data, length-1, 0));
-	ESP_ERROR_CHECK(i2c_master_write_byte(cmd, data[length-1], 1));
-	ESP_ERROR_CHECK(i2c_master_stop(cmd));
-	ESP_ERROR_CHECK(i2c_master_cmd_begin(I2C_NUM, cmd, 1000/portTICK_PERIOD_MS));
-	i2c_cmd_link_delete(cmd);
-
-	return 0;
-}
-
-void user_delay_ms(uint32_t period) {
-#if __DEBUG__
-	ESP_LOGI(__FUNCTION__, "period=%" PRIu32, period);
-#endif
-	esp_rom_delay_us(period*1000);
-}
 
 // Get scaled value
 void _getMotion6(double *_ax, double *_ay, double *_az, double *_gx, double *_gy, double *_gz) {
@@ -176,13 +82,10 @@ void getRollPitch(double accX, double accY, double accZ, double *roll, double *p
 
 void bmi160(void *pvParameters)
 {
-	//I2C address is 0x68 (if SDO-pin is gnd) or 0x69 (if SDO-pin is vddio).
-	//sensor.id = BMI160_I2C_ADDR;
-	sensor.id = CONFIG_I2C_ADDR;
-	sensor.intf = BMI160_I2C_INTF;
-	sensor.read = user_i2c_read;
-	sensor.write = user_i2c_write;
-	sensor.delay_ms = user_delay_ms;
+	// Initialize i2c
+	interface_init(&sensor);
+
+	// Initialize IMU
 	int8_t ret = bmi160_init(&sensor);
 	if (ret == BMI160_OK)
 	{
