@@ -10,10 +10,8 @@ You can view like this.
 ![Image](https://github.com/user-attachments/assets/6d81eec0-5b80-4e5f-ae97-689742253f9a)   
 
 # Software requirements
-ESP-IDF V5.0 or later.   
-ESP-IDF V4.4 release branch reached EOL in July 2024.   
-ESP-IDF V5.1 is required when using ESP32-C6.   
-I used [this](https://github.com/boschsensortec/BMI160_driver) library.   
+ESP-IDF V5.2 or later.   
+Because this project uses the new I2C driver.   
 
 # Hardware requirements
 BMI160 Accelerometer Gyroscope module 6 Dof inertial Measurement Sensors.   
