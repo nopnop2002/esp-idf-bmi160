@@ -80,8 +80,9 @@ http://esp32.local/
 ![bmi160-euler](https://user-images.githubusercontent.com/6020549/232381988-f4003a78-2145-493c-829e-9d0952117ea6.JPG)
 
 WEB pages are stored in the html folder.   
-I used [this](https://canvas-gauges.com/) for gauge display.   
 I used [this](https://threejs.org/) for 3D display.   
+I used [this](https://canvas-gauges.com/) for gauge display.   
+All Configuration Options for the gauge display is [here](https://canvas-gauges.com/documentation/user-guide/configuration).   
 You can change the design and color according to your preference like this.   
 ![Image](https://github.com/user-attachments/assets/dfe82573-27a7-4395-bad6-cef1e3b4299c)   
 
