@@ -80,7 +80,7 @@ http://esp32.local/
 WEB pages are stored in the html folder.   
 I used [this](https://threejs.org/) for 3D display.   
 I used [this](https://canvas-gauges.com/) for gauge display.   
-All Configuration Options for the gauge display is [here](https://canvas-gauges.com/documentation/user-guide/configuration).   
+Configuration Options for the gauge display is [here](https://canvas-gauges.com/documentation/user-guide/configuration).   
 You can change the design and color according to your preference like this.   
 ![Image](https://github.com/user-attachments/assets/dfe82573-27a7-4395-bad6-cef1e3b4299c)   
 
