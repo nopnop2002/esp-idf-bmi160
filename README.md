@@ -168,6 +168,7 @@ $ python --version
 Python 3.11.9
 $ python -m pip install -U pip
 $ python -m pip install panda3d
+$ python -m pip install numpy
 $ git clone https://github.com/nopnop2002/esp-idf-mpu6050-dmp
 $ cd esp-idf-mpu6050-dmp/panda3d
 $ python panda.py --help
