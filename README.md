@@ -7,7 +7,7 @@ It's very intuitive and easy to understand.
 However, since BMI160 is a 6DoF IMU, YAW estimation is not possible.   
 ![a-Pitch-yaw-and-roll-angles-of-an-aircraft-with-body-orientation-O-u-v-original](https://user-images.githubusercontent.com/6020549/226072914-a7f923fc-eb6e-4d19-b2ff-8c9f2749ee6f.jpg)   
 You can view like this.   
-![Image](https://github.com/user-attachments/assets/6d81eec0-5b80-4e5f-ae97-689742253f9a)   
+![Image](https://github.com/user-attachments/assets/cb9f1408-b372-4e55-84f6-1191f068cd1a)
 
 # Software requirements
 ESP-IDF V5.2 or later.   
