@@ -15,3 +15,4 @@ I based this on [this](https://github.com/boschsensortec/BMI160_SensorAPI).
 
 # websocket   
 I used [this](https://github.com/Molorius/esp32-websocket) ESP-IDF WebSocket Component.   
+For ESP-IDF V6, mbedtls_sha1() needs to be changed to mbedtls_md().   
