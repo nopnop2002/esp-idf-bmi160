@@ -11,7 +11,7 @@ For this filter, the sampling period (time difference from the previous executio
 The original is fixed at 1.0 second, but I changed this to a parameter.   
 
 # bmi160   
-I based this on [this](https://github.com/boschsensortec/BMI160_SensorAPI).   
+I created it based on [this](https://github.com/boschsensortec/BMI160_SensorAPI).   
 
 # websocket   
 I used [this](https://github.com/Molorius/esp32-websocket) ESP-IDF WebSocket Component.   
