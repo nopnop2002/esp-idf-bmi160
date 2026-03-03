@@ -46,6 +46,26 @@ struct bmi160_dev sensor;
 float accel_sensitivity;
 float gyro_sensitivity;
 
+// Get scaled value
+void _getMotion6(double *_ax, double *_ay, double *_az, double *_gx, double *_gy, double *_gz) {
+	struct bmi160_sensor_data accel;
+	struct bmi160_sensor_data gyro;
+	int8_t ret = bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL), &accel, &gyro, &sensor);
+	if (ret != BMI160_OK) {
+		ESP_LOGE(TAG, "BMI160 get_sensor_data fail %d", ret);
+		vTaskDelete(NULL);
+	}
+	ESP_LOGD(TAG, "accel=%d %d %d gyro=%d %d %d", accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
+
+	// Convert relative to absolute
+	*_ax = (double)accel.x / accel_sensitivity;
+	*_ay = (double)accel.y / accel_sensitivity;
+	*_az = (double)accel.z / accel_sensitivity;
+	*_gx = (double)gyro.x / gyro_sensitivity;
+	*_gy = (double)gyro.y / gyro_sensitivity;
+	*_gz = (double)gyro.z / gyro_sensitivity;
+}
+
 // Get time in seconds since boot
 // Compatible with ROS's time.toSec() function
 double TimeToSec() {
@@ -94,6 +114,8 @@ void bmi160(void *pvParameters)
 	}
 	ESP_LOGI(TAG, "bmi160_set_sens_conf");
 
+	double ax, ay, az;
+	double gx, gy, gz;
 	double last_time_ = TimeToSec();
 	int elasped = 0;
 
@@ -107,35 +129,19 @@ void bmi160(void *pvParameters)
 	int initial_period = 400;
 
 	while(1) {
-		struct bmi160_sensor_data accel;
-		struct bmi160_sensor_data gyro;
-		int8_t ret = bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL), &accel, &gyro, &sensor);
-		if (ret != BMI160_OK) {
-			ESP_LOGE(TAG, "BMI160 get_sensor_data fail %d", ret);
-			vTaskDelete(NULL);
-		}
-		ESP_LOGD(TAG, "accel=%d %d %d gyro=%d %d %d", accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
-
+		_getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+		//printf("%f %f %f - %f %f %f\n", ax, ay, az, gx, gy, gz);
+		
 		// Get the elapsed time from the previous
 		float dt = (TimeToSec() - last_time_);
 		ESP_LOGD(TAG, "dt=%f",dt);
 		last_time_ = TimeToSec();
 
-		// Convert relative to absolute
-		float ax = (float)accel.x / accel_sensitivity;
-		float ay = (float)accel.y / accel_sensitivity;
-		float az = (float)accel.z / accel_sensitivity; 
-		float gx = (float)gyro.x / gyro_sensitivity;
-		float gy = (float)gyro.y / gyro_sensitivity;
-		float gz = (float)gyro.z / gyro_sensitivity;
-
-		// Get Euler
 		madgwick.updateIMU(gx, gy, gz, ax, ay, az, dt);
 		float roll = madgwick.getRoll();
 		float pitch = madgwick.getPitch();
 		float yaw = madgwick.getYaw();
 		ESP_LOGD(TAG, "roll=%f pitch=%f yaw=%f", roll, pitch, yaw);
-
 
 		/* Print Data every 10 times */
 		if (elasped > initial_period) {

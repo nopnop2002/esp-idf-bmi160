@@ -57,7 +57,7 @@ void _getMotion6(double *_ax, double *_ay, double *_az, double *_gx, double *_gy
 		ESP_LOGE(TAG, "BMI160 get_sensor_data fail %d", ret);
 		vTaskDelete(NULL);
 	}
-	//printf("%d %d %d - %d %d %d\n", accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
+	ESP_LOGD(TAG, "accel=%d %d %d gyro=%d %d %d", accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
 
 	// Convert relative to absolute
 	*_ax = (double)accel.x / accel_sensitivity;
