@@ -40,7 +40,7 @@ We can find the sensor using [i2c-tools](https://github.com/espressif/esp-idf/tr
 ![Image](https://github.com/user-attachments/assets/5a5d46fd-ce1e-4199-acf4-c6b49abc2dd8)
 
 - Detect senser.   
-The i2c address for this sensor is 0x68.   
+The i2c address for this sensor is 0x68 or 0x69.   
 ![Image](https://github.com/user-attachments/assets/eab06c4b-32dd-4cab-94ef-f36a6b9fbd8d)
 
 - Read register.   
