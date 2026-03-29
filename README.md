@@ -36,7 +36,7 @@ GND:i2c address is 0x68.
 # Find the sensor
 We can find the sensor using [i2c-tools](https://github.com/espressif/esp-idf/tree/master/examples/peripherals/i2c/i2c_tools).   
 
-- Selcect SCL and SDA using menuconfig.   
+- Select SCL and SDA using menuconfig.   
 ![Image](https://github.com/user-attachments/assets/5a5d46fd-ce1e-4199-acf4-c6b49abc2dd8)
 
 - Detect senser.   
