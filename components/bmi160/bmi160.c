@@ -36,6 +36,7 @@
 *
 */
 
+#include <stdio.h>
 #include "esp_log.h"
 #include "bmi160.h"
 
@@ -2505,10 +2506,12 @@ int8_t bmi160_start_foc(const struct bmi160_foc_conf *foc_conf,
     {
         /* Set the offset enable bits */
         rslt = configure_offset_enable(foc_conf, dev);
+        printf("configure_offset_enable rslt=%d\n", rslt);
         if (rslt == BMI160_OK)
         {
             /* Read the FOC config from the sensor */
             rslt = bmi160_get_regs(BMI160_FOC_CONF_ADDR, &data, 1, dev);
+            printf("bmi160_get_regs rslt=%d\n", rslt);
 
             /* Set the FOC config for gyro */
             data = BMI160_SET_BITS(data, BMI160_GYRO_FOC_EN, foc_conf->foc_gyr_en);
@@ -2521,11 +2524,13 @@ int8_t bmi160_start_foc(const struct bmi160_foc_conf *foc_conf,
             {
                 /* Set the FOC config in the sensor */
                 rslt = bmi160_set_regs(BMI160_FOC_CONF_ADDR, &data, 1, dev);
+                printf("bmi160_set_regs rslt=%d\n", rslt);
                 if (rslt == BMI160_OK)
                 {
                     /* Procedure to trigger
                      * FOC and check status */
                     rslt = trigger_foc(offset, dev);
+                    printf("trigger_foc rslt=%d\n", rslt);
                 }
             }
         }
@@ -6394,10 +6399,13 @@ static int8_t trigger_foc(struct bmi160_offsets *offset, struct bmi160_dev const
 
     /* Start the FOC process */
     rslt = bmi160_set_regs(BMI160_COMMAND_REG_ADDR, &cmd, 1, dev);
+    printf("trigger_foc bmi160_set_regs rslt=%d\n", rslt);
     if (rslt == BMI160_OK)
     {
         /* Check the FOC status*/
         rslt = get_foc_status(&foc_status, dev);
+        printf("trigger_foc get_foc_status foc_status=%d\n", foc_status);
+        printf("trigger_foc get_foc_status rslt=%d\n", rslt);
 
         if ((rslt != BMI160_OK) || (foc_status != BMI160_ENABLE))
         {
@@ -6409,6 +6417,7 @@ static int8_t trigger_foc(struct bmi160_offsets *offset, struct bmi160_dev const
 
                 /* Check the FOC status*/
                 rslt = get_foc_status(&foc_status, dev);
+                printf("trigger_foc get_foc_status foc_status=%d\n", foc_status);
                 timeout++;
             }
 
@@ -6416,6 +6425,7 @@ static int8_t trigger_foc(struct bmi160_offsets *offset, struct bmi160_dev const
             {
                 /* Get offset values from sensor */
                 rslt = bmi160_get_offsets(offset, dev);
+                printf("trigger_foc bmi160_get_offsets rslt=%d\n", rslt);
             }
             else
             {
@@ -6428,6 +6438,7 @@ static int8_t trigger_foc(struct bmi160_offsets *offset, struct bmi160_dev const
         {
             /* Read registers 0x04-0x17 */
             rslt = bmi160_get_regs(BMI160_GYRO_DATA_ADDR, data_array, 20, dev);
+            printf("trigger_foc bmi160_get_reg rslt=%d\n", rslt);
         }
     }
 
