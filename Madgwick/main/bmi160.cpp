@@ -37,6 +37,7 @@ static const char *TAG = "IMU";
 #define micros() (unsigned long) (esp_timer_get_time())
 #define delay(ms) esp_rom_delay_us(ms*1000)
 
+// Create the Madgwick instances
 Madgwick madgwick;
 
 /* IMU Data */
@@ -46,8 +47,76 @@ struct bmi160_dev sensor;
 float accel_sensitivity;
 float gyro_sensitivity;
 
+/* Obtain offsets */
+void obtain_offsets(struct bmi160_dev *dev, struct bmi160_offsets *offsets)
+{
+	struct bmi160_sensor_data accel;
+	struct bmi160_sensor_data gyro;
+	int32_t sum[6] = {0};
+	for (int i=0;i<100;i++) {
+		int8_t ret = bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL), &accel, &gyro, dev);
+		if (ret != BMI160_OK) {
+			ESP_LOGE(TAG, "BMI160 get_sensor_data fail %d", ret);
+			return;
+		}
+		//printf("accel=%d %d %d gyro=%d %d %d\n", accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
+		sum[0] += accel.x;
+		sum[1] += accel.y;
+		sum[2] += accel.z -16384;
+		sum[3] += gyro.x;
+		sum[4] += gyro.y;
+		sum[5] += gyro.z;
+		vTaskDelay(1);
+	}
+	float fsum[6];
+	for (int i = 0; i < 6; ++i) {
+		fsum[i] = sum[i] / 100.0f;
+	}
+	//printf("fsum accel=%f %f %f gyro=%f %f %f\n", fsum[0], fsum[1], fsum[2], fsum[3], fsum[4], fsum[5]);
+
+	/* offset values set by user as per their reference 
+	 * Resolution of accel = 3.9mg/LSB 
+	 * Resolution of gyro  = (0.061degrees/second)/LSB */
+	fsum[0] = fsum[0] / accel_sensitivity / 3.9 * 1000;
+	fsum[1] = fsum[1] / accel_sensitivity / 3.9 * 1000;
+	fsum[2] = fsum[2] / accel_sensitivity / 3.9 * 1000;
+	fsum[3] = fsum[3] / gyro_sensitivity / 0.061;
+	fsum[4] = fsum[4] / gyro_sensitivity / 0.061;
+	fsum[5] = fsum[5] / gyro_sensitivity / 0.061;
+	printf("offsets accel=%f %f %f gyro=%f %f %f\n", fsum[0], fsum[1], fsum[2], fsum[3], fsum[4], fsum[5]);
+
+	offsets->off_acc_x = 0-(int)fsum[0];
+	offsets->off_acc_y = 0-(int)fsum[1];
+	offsets->off_acc_z = 0-(int)fsum[2];
+	offsets->off_gyro_x = 0-(int)fsum[3];
+	offsets->off_gyro_y = 0-(int)fsum[4];
+	offsets->off_gyro_z = 0-(int)fsum[5];
+}
+
+/* Updating manual offsets to sensor */
+int8_t write_offsets(struct bmi160_dev *dev, struct bmi160_offsets offsets)
+{
+	int8_t rslt = 0;
+	/* FOC configuration structure */
+	struct bmi160_foc_conf foc_conf;
+	
+	/* Enable offset update for accel */
+	foc_conf.acc_off_en = BMI160_ENABLE;
+
+	/* Enable offset update for gyro */
+	foc_conf.gyro_off_en = BMI160_ENABLE;
+	
+	rslt = bmi160_set_offsets(&foc_conf, &offsets, dev);
+	//printf("bmi160_set_offsets rslt=%d\n", rslt);
+	
+	/* After offset setting the data read from the 
+	 * sensor will have the corresponding offset */
+	
+	return rslt;
+}
+
 // Get scaled value
-void _getMotion6(double *_ax, double *_ay, double *_az, double *_gx, double *_gy, double *_gz) {
+void getMotion6(double *_ax, double *_ay, double *_az, double *_gx, double *_gy, double *_gz) {
 	struct bmi160_sensor_data accel;
 	struct bmi160_sensor_data gyro;
 	int8_t ret = bmi160_get_sensor_data((BMI160_ACCEL_SEL | BMI160_GYRO_SEL), &accel, &gyro, &sensor);
@@ -107,12 +176,27 @@ void bmi160(void *pvParameters)
 	sensor.gyro_cfg.power = BMI160_GYRO_NORMAL_MODE;
 	gyro_sensitivity = 131.2; // Deg/Sec
 
+	// Config sensor
 	ret = bmi160_set_sens_conf(&sensor);
 	if (ret != BMI160_OK) {
 		ESP_LOGE(TAG, "BMI160 set_sens_conf fail %d", ret);
 		vTaskDelete(NULL);
 	}
 	ESP_LOGI(TAG, "bmi160_set_sens_conf");
+
+	// Calcurate offsets
+	ESP_LOGW(TAG, "IMU is currently being calibrated. Please do not move it.");
+	struct bmi160_offsets offsets;
+	obtain_offsets(&sensor, &offsets);
+
+	// Write offsets
+	ret = write_offsets(&sensor, offsets);
+	if (ret != BMI160_OK) {
+		ESP_LOGE(TAG, "BMI160 write_offsets fail %d", ret);
+		vTaskDelete(NULL);
+	}
+	vTaskDelay(10); // Wait for write
+	ESP_LOGW(TAG, "IMU calibration is complete.");
 
 	double ax, ay, az;
 	double gx, gy, gz;
@@ -129,7 +213,7 @@ void bmi160(void *pvParameters)
 	int initial_period = 400;
 
 	while(1) {
-		_getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+		getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
 		//printf("%f %f %f - %f %f %f\n", ax, ay, az, gx, gy, gz);
 		
 		// Get the elapsed time from the previous
