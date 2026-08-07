@@ -709,6 +709,11 @@ typedef int8_t (*bmi160_read_fptr_t)(uint8_t dev_addr, uint8_t reg_addr, uint8_t
  * the platform specific write functions of the user
  */
 typedef int8_t (*bmi160_write_fptr_t)(uint8_t dev_addr, uint8_t reg_addr, uint8_t *read_data, uint16_t len);
+
+/*!
+ * @brief Bus communication function pointer which should be mapped to
+ * the platform specific delay functions of the user
+ */
 typedef void (*bmi160_delay_fptr_t)(uint32_t period);
 
 /*************************** Data structures *********************************/

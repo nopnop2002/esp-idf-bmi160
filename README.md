@@ -17,7 +17,7 @@ Because this project uses the new I2C driver.
 BMI160 Accelerometer Gyroscope module 6 Dof inertial Measurement Sensors.   
 
 # Wireing
-|BMI160||ESP32|ESP32-S2/S3|ESP32-C2/C3/C6||
+|BMI160||ESP32|ESP32-S2/S3|ESP32-Cx||
 |:-:|:-:|:-:|:-:|:-:|:-:|
 |VIN|--|N/C|N/C|N/C||
 |3V3|--|3.3V|3.3V|3.3V||
